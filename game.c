@@ -38,10 +38,27 @@ int main()
             break;
 
         default:
-            printf("\nInvalid choice! Please run the program again.\n");
+
+	    printf("\nInvalid choice! Please run the program again.\n");
             break;
     }
 
     return 0;
+}
+// select the game
+
+void singlePlayerGame()
+{
+    printf("Single Player logic goes here.\n");
+}
+
+void twoPlayerGame()
+{
+    printf("Two Player logic goes here.\n");
+}
+
+void threePlayerGame()
+{
+    printf("Three Player logic goes here.\n");
 }
 
