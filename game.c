@@ -138,9 +138,7 @@ while (gameRunning) {
                 printf("Move (W/A/S/D) or Q to quit: ");
                 scanf(" %c", &move);
             }
-            if (scanf(" %c",&move) == 1) { //DELETE THIS LINE
-}
-        if (scanf(" %c",&move) == 1) {//Basic safety check for input
+
             if (move == 'q' || move == 'Q') {
                 players[currentTurn].active = 0;
                 grid[players[currentTurn].px][players[currentTurn].py] = '.';
@@ -148,7 +146,7 @@ while (gameRunning) {
                 int result = movePlayer(grid, n, &players[currentTurn], move);
                 if (result == 2) {
                     gameRunning = 0; //Replaces 'break' (Standard Win)
-                }}}
+                }}
 
         //Only log and update turn if the move didn't end the game
         if (gameRunning) {
