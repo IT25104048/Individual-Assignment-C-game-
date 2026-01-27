@@ -11,6 +11,8 @@ typedef struct {
         int intel; // intel collected so far
         int active; // 1 = still playing, 0 = eliminated
         char symbol; // how this player shows up on the grid
+        int isAI;//0 =Human,1 =Computer
+
   } Player;
 /*Function Prototypes*/
 char **createGrid(int n);
@@ -22,14 +24,14 @@ void logState(char **grid, int n, Player players[], int turn);
 void freeGrid(char **grid, int n);
 
 int main (){
-	int n,choice, numPlayers;
-	srand(time(null));/*Ensures different layouts every run
+        int n,choice, numPlayers,subChoice;
+        srand(time(NULL));/*Ensures different layouts every run
                           Without this, rand() repeats patterns*/
-      
-	printf("=====================================\n");
+
+        printf("=====================================\n");
         printf("   SpyNet – The Codebreaker Protocol  \n");
         printf("=====================================\n");
-	
+
    // Grid Size Selecting 
     do {
         printf("Enter grid size (5-15): ");
@@ -37,9 +39,9 @@ int main (){
             while(getchar() != '\n');
             n = 0;
             continue;
-	    }
-   }while (n < MIN || n > MAX);	
-		
+            }
+   }while (n < MIN || n > MAX);
+
    //foe player node selecting
     printf("\nSelect Game Mode:\n");
     printf("1. Single Player (@)\n");
@@ -49,13 +51,37 @@ int main (){
     scanf("%d", &choice);
 
     numPlayers = (choice >= 1 && choice <= 3) ? choice : 1;
-  
+
      // Initialize Players with unique symbols
     Player players[3] = {
         {0, 0, 3, 0, 1, '@'},  // Player 1
         {0, n-1, 3, 0, 1, '&'},  // Player 2
         {n-1, 0, 3, 0, 1, '$'}     // Player 3
     };
+
+// Sub-mode selection using isAI flag
+    if (choice == 2){      //for 2 player
+     printf("\nSelect two player mode:\n");
+        printf("1. Human vs Human\n");
+        printf("2. Human vs Computer\n");
+     printf("Enter your choice: ");
+     scanf("%d", &subChoice);
+        if (subChoice == 2) players[1].isAI = 1;
+    } 
+    else if (choice == 3){  //for 3 player
+     printf("\nSelect three player mode:\n");
+        printf("1. Human vs Human vs Human\n");
+        printf("2. Human vs Human vs Computer\n");
+        printf("3. Human vs Computer vs Computer\n");
+     printf("Enter choice: ");
+     scanf("%d", &subChoice);
+        if (subChoice == 2) {
+            players[2].isAI = 1;
+        }
+      else if (subChoice == 3) {
+          players[1].isAI = 1;
+           players[2].isAI = 1;
+        }}
 
     //Setup Grid
     char **grid = createGrid(n);
@@ -81,10 +107,11 @@ while (gameRunning) {
     if (numPlayers > 1 && activeCount ==1) {
         for (int i = 0; i < numPlayers; i++) {
             if (players[i].active) {
-                printf("\nPlayer %c is the last one standing! Victory by default.\n", players[i].symbol);
+               printf("\nPlayer %c (%s) is the last one standing! Victory.\n",players[i].symbol, players[i].isAI ? "Computer" : "Human");
             } }
+
         gameRunning = 0;
-    } 
+    }
     else if (activeCount == 0) {
         printf("\nAll agents eliminated. Mission Failure.\n");
         gameRunning = 0;
@@ -98,14 +125,24 @@ while (gameRunning) {
         }
 
         displayGrid(grid, n, players, numPlayers);
-        printf("\nPlayer %c's Turn | Health: %d | Intel: %d/3\n",
-                players[currentTurn].symbol, players[currentTurn].lives, players[currentTurn].intel);
-        printf("Move (W/A/S/D) or Q to quit: ");
-        
+        printf("\nPlayer %c's Turn(%s) | Health: %d | Intel: %d/3\n",
+                players[currentTurn].symbol,players[currentTurn].isAI ? "Computer" : "Human", players[currentTurn].lives, players[currentTurn].intel);
+
         char move;
+	if (players[currentTurn].isAI) {
+                // Computer logic: Simple random choice
+                char aiMoves[] = {'W', 'A', 'S', 'D'};
+                move = aiMoves[rand() % 4];
+                printf("Computer chooses move: %c\n", move);
+            } else {
+                printf("Move (W/A/S/D) or Q to quit: ");
+                scanf(" %c", &move);
+            }
+            if (scanf(" %c",&move) == 1) { //DELETE THIS LINE
+}
         if (scanf(" %c",&move) == 1) {//Basic safety check for input
             if (move == 'q' || move == 'Q') {
-                players[currentTurn].active = 0; 
+                players[currentTurn].active = 0;
                 grid[players[currentTurn].px][players[currentTurn].py] = '.';
             } else {
                 int result = movePlayer(grid, n, &players[currentTurn], move);
@@ -165,15 +202,16 @@ int movePlayer(char **grid, int n, Player *p, char move)
     /* extraction point logic */
     if (grid[nextX][nextY] == 'X') {
         if (p->intel >= 3) {
-            printf("\nPlayer %c wins! Extraction Successful.\n", p->symbol);
+            printf("\nPlayer %c (%s) wins! Extraction Successful.\n", 
+                   p->symbol, p->isAI ? "Computer" : "Human");
+
             return 2;
         } else {
             printf("\nPlayer %c failed extraction (Need 3 Intel) and is eliminated!\n", p->symbol);
             p->active = 0;
             grid[p->px][p->py] = '.';
             return 0;
-        }
-    }
+        }}
 
     /* update player position on the grid */
     grid[p->px][p->py] = '.';
@@ -183,4 +221,64 @@ int movePlayer(char **grid, int n, Player *p, char move)
 
     return 1;
 }
+char **createGrid(int n)
+{
+    char **grid = malloc(n * sizeof(char *));   // allocate rows
+    for (int i = 0; i < n; i++) {
+        grid[i] = malloc(n * sizeof(char));     // allocate columns
+    }
+    return grid;
+}
+
+void initializeGrid(char **grid, int n)
+{
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            grid[i][j] = '.';   // empty cell
+        }}}
+
+void displayGrid(char **grid, int n, Player players[], int numPlayers)
+{
+    printf("\n");
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            printf("%c ", grid[i][j]);
+        }
+        printf("\n");
+    }}
+
+void placeRandom(char **grid, int n, char symbol, int count)
+{
+    while (count > 0) {
+        int x = rand() % n;
+        int y = rand() % n;
+
+        if (grid[x][y] == '.') {
+            grid[x][y] = symbol;
+            count--;
+        }}}
+
+void logState(char **grid, int n, Player players[], int turn)
+{
+    FILE *fp = fopen("game_log.txt", "a");
+    if (fp == NULL)
+        return;
+
+    fprintf(fp,"Player %c (%s) moved | Health: %d | Intel: %d\n",
+            players[turn].symbol,
+	    players[turn].isAI ? "AI" : "Human",
+            players[turn].lives,
+            players[turn].intel);
+
+    fclose(fp);
+}
+
+void freeGrid(char **grid, int n)
+{
+    for (int i = 0; i < n; i++) {
+        free(grid[i]);
+    }
+    free(grid);
+}
+
 
