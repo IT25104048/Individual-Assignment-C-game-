@@ -235,48 +235,67 @@ void initializeGrid(char **grid, int n)
             grid[i][j] = '.';   // empty cell
         }}}
 
+// This function displays the current game grid on the console
+// It helps players visualize positions of players and game elements
 void displayGrid(char **grid, int n, Player players[], int numPlayers)
 {
+	// Print a blank line for better readability
     printf("\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            printf("%c ", grid[i][j]);
+    for (int i = 0; i < n; i++) {// Loop through each row of the grid
+        for (int j = 0; j < n; j++) {//oop through each column in the current row
+            printf("%c ", grid[i][j]);// Print the character stored in the grid cell
         }
         printf("\n");
     }}
 
+// This function randomly places a given symbol on the game grid
+// It is used to place walls, intel, lives, and extraction points
 void placeRandom(char **grid, int n, char symbol, int count)
 {
+	// Keep placing until the required number of symbols are placed
     while (count > 0) {
+	    // Generate random row and column positions within the grid
         int x = rand() % n;
         int y = rand() % n;
 
+        // Check if the selected cell is empty
         if (grid[x][y] == '.') {
+	// Place the symbol in the empty cell
             grid[x][y] = symbol;
+	    // Decrease count after successful placement
             count--;
-        }}}
+        }
+	// If the cell is not empty, try another random position
+    }}
 
-void logState(char **grid, int n, Player players[], int turn)
+void logState(char **grid, int n, Player players[], int turn)//This function writes the current player’s status to a file called game_log.txt after each turn
 {
+// Open the file in append mode so previous data is not erased	
     FILE *fp = fopen("game_log.txt", "a");
+
+    // If file opening fails, exit the function safely
     if (fp == NULL)
         return;
 
     fprintf(fp,"Player %c (%s) moved | Health: %d | Intel: %d\n",
-            players[turn].symbol,
-	    players[turn].isAI ? "AI" : "Human",
-            players[turn].lives,
-            players[turn].intel);
+            players[turn].symbol,// Unique player symbol
+	    players[turn].isAI ? "AI" : "Human",// Check whether AI or Human
+            players[turn].lives,//Remaining lives
+            players[turn].intel);//Intel collected
 
-    fclose(fp);
+    fclose(fp); // Close the file to save data and free system resources
 }
 
-void freeGrid(char **grid, int n)
+void freeGrid(char **grid, int n)//char **grid → pointer to a pointer (2D array)
+                                 //n → number of rows
 {
-    for (int i = 0; i < n; i++) {
-        free(grid[i]);
-    }
-    free(grid);
+    for (int i = 0; i < n; i++) {     //grid[i] points to one row
+        free(grid[i]);                // Each row was allocated using malloc
+    }                                 //So we must free every row individually
+    free(grid);                       //If you skip this → memory leak
 }
 
+/*After freeing all rows
+Free the array of pointers (grid)
+Now all dynamically allocated memory is released*/
 

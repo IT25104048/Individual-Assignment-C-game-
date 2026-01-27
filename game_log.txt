@@ -108,3 +108,15 @@ Player & (AI) moved | Health: 3 | Intel: 0
 Player $ (AI) moved | Health: 1 | Intel: 0
 Player & (AI) moved | Health: 3 | Intel: 0
 Player $ (AI) moved | Health: 0 | Intel: 0
+Player @ (Human) moved | Health: 2 | Intel: 0
+Player & (AI) moved | Health: 2 | Intel: 0
+Player @ (Human) moved | Health: 2 | Intel: 0
+Player & (AI) moved | Health: 2 | Intel: 0
+Player @ (Human) moved | Health: 2 | Intel: 0
+Player & (AI) moved | Health: 1 | Intel: 0
+Player @ (Human) moved | Health: 2 | Intel: 0
+Player & (AI) moved | Health: 1 | Intel: 0
+Player @ (Human) moved | Health: 2 | Intel: 0
+Player & (AI) moved | Health: 0 | Intel: 0
+Player @ (Human) moved | Health: 3 | Intel: 0
+Player @ (Human) moved | Health: 3 | Intel: 0
